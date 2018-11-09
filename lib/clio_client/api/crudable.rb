@@ -6,17 +6,17 @@ module ClioClient
         data_item(params)
       end
 
-      def create(params = {})
+      def create(data = {}, params = {})
         begin
-          resource = params.is_a?(Array) ? create_plural(params) : create_singular(params)
+          resource = data.is_a?(Array) ? create_plural(data, params) : create_singular(data, params)
         rescue ClioClient::UnknownResponse
           false
         end
       end
 
-      def update(id, params = {})
+      def update(id, data = {})
         begin
-          response = session.put("#{end_point_url}/#{id}", {singular_resource => params}.to_json)
+          response = session.put("#{end_point_url}/#{id}", {singular_resource => data}.to_json)
           data_item(response[singular_resource])        
         rescue ClioClient::UnknownResponse
           false
@@ -33,13 +33,13 @@ module ClioClient
 
       private
 
-      def create_singular(params)
-        response = session.post(end_point_url, {singular_resource => params}.to_json)
+      def create_singular(data, params)
+        response = session.post(end_point_url, {singular_resource => data}.to_json, params)
         data_item(response[singular_resource])
       end
 
-      def create_plural(params)
-        response = session.post(end_point_url, {plural_resource => params}.to_json)
+      def create_plural(data, params)
+        response = session.post(end_point_url, {plural_resource => data}.to_json, params)
         response[plural_resource].map do |resource|
           # Errors are presented inline when doing bulk create via the Clio API
           if resource.key?("errors")

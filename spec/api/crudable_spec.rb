@@ -17,7 +17,7 @@ describe ClioClient::Api::Crudable do
   end
 
   describe "#create" do
-    let(:params) { { string: "1" } }
+    let(:data) { { string: "1" } }
     let(:response) do
       { "dummy" => { string: "1" } }
     end
@@ -26,16 +26,16 @@ describe ClioClient::Api::Crudable do
     end
 
     it "issues with create request" do
-      session.stub(:post).with("test", {"dummy" => params}.to_json).and_return(response)
-      record = subject.create(params)
+      session.stub(:post).with("test", {"dummy" => data}.to_json, {}).and_return(response)
+      record = subject.create(data)
       expect(record).to be_kind_of TestResource
       expect(record.string).to eql "1"
     end
 
     context "when errors are returned" do
       it "should parse them inline" do
-        session.stub(:post).with("test", {"dummies" => [params, params]}.to_json).and_return({"dummies" => [response["dummy"], inline_error_response]})
-        records = subject.create([params, params])
+        session.stub(:post).with("test", {"dummies" => [data, data]}.to_json, {}).and_return({"dummies" => [response["dummy"], inline_error_response]})
+        records = subject.create([data, data])
         expect(records[0]).to be_kind_of TestResource
         expect(records[0].string).to eql "1"
 

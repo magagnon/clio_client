@@ -1,3 +1,5 @@
+require 'date'
+
 module ClioClient
 
   class ResourceNotSaved < Exception; end
